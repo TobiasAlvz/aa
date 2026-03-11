@@ -1,0 +1,18 @@
+public boolean transfereValor (int idContaOrigem, double valor, int idContaDestino) {
+
+		boolean sucesso = false;
+		
+		ContaCorrente contaOrigem = pesquisaConta(idContaOrigem);
+		ContaCorrente contaDestino = pesquisaConta(idContaDestino);
+
+		if(contaOrigem != null && contaDestino != null) {
+			if(contaOrigem.getSaldo() >= valor) {
+				contaDestino.setSaldo(contaDestino.getSaldo() + valor);
+				contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
+				sucesso = true;
+			}
+		}
+
+		return sucesso;
+	}
+}
