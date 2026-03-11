@@ -1,18 +1,146 @@
-public boolean transfereValor (int idContaOrigem, double valor, int idContaDestino) {
+package negocio;
 
-		boolean sucesso = false;
-		
-		ContaCorrente contaOrigem = pesquisaConta(idContaOrigem);
-		ContaCorrente contaDestino = pesquisaConta(idContaDestino);
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
-		if(contaOrigem != null && contaDestino != null) {
-			if(contaOrigem.getSaldo() >= valor) {
-				contaDestino.setSaldo(contaDestino.getSaldo() + valor);
-				contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
-				sucesso = true;
-			}
-		}
+import java.util.ArrayList;
+import java.util.List;
 
-		return sucesso;
+import org.junit.Test;
+
+public class GerenciadoraClientesTest_Ex3 {
+
+	private GerenciadoraClientes gerClientes;
+
+	private GerenciadoraClientes criarGerenciadorPadrao() {
+		Cliente cliente01 = new Cliente(1, "Gustavo Farias", 31, "gugafarias@gmail.com", 1, true);
+		Cliente cliente02 = new Cliente(2, "Felipe Augusto", 34, "felipeaugusto@gmail.com", 1, true);
+
+		List<Cliente> clientesDoBanco = new ArrayList<>();
+		clientesDoBanco.add(cliente01);
+		clientesDoBanco.add(cliente02);
+
+		return new GerenciadoraClientes(clientesDoBanco);
 	}
+
+	@Test
+	public void testPesquisaCliente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		Cliente cliente = gerClientes.pesquisaCliente(1);
+
+		assertThat(cliente.getId(), is(1));
+		assertThat(cliente.getNome(), is("Gustavo Farias"));
+	}
+
+	@Test
+	public void testPesquisaSegundoCliente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		Cliente cliente = gerClientes.pesquisaCliente(2);
+
+		assertThat(cliente.getId(), is(2));
+		assertThat(cliente.getNome(), is("Felipe Augusto"));
+	}
+
+	@Test
+	public void testPesquisa_ClienteInexistente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		Cliente cliente = gerClientes.pesquisaCliente(5);
+
+		assertNull(cliente);
+	}
+
+	@Test
+	public void testRemoveCliente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		boolean clienteRemovido = gerClientes.removeCliente(2);
+
+		assertThat(clienteRemovido, is(true));
+		assertThat(gerClientes.getClientesDoBanco().size(), is(1));
+		assertNull(gerClientes.pesquisaCliente(2));
+	}
+
+	@Test
+	public void testRemovePrimeiroCliente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		boolean clienteRemovido = gerClientes.removeCliente(1);
+
+		assertTrue(clienteRemovido);
+		assertThat(gerClientes.getClientesDoBanco().size(), is(1));
+		assertNull(gerClientes.pesquisaCliente(1));
+	}
+
+	@Test
+	public void testRemoveClienteInexistente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		boolean clienteRemovido = gerClientes.removeCliente(10);
+
+		assertFalse(clienteRemovido);
+		assertThat(gerClientes.getClientesDoBanco().size(), is(2));
+	}
+
+	@Test
+	public void testListaClientesInicial() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		assertThat(gerClientes.getClientesDoBanco().size(), is(2));
+	}
+
+	@Test
+	public void testListaVazia() {
+
+		List<Cliente> clientesDoBanco = new ArrayList<>();
+
+		gerClientes = new GerenciadoraClientes(clientesDoBanco);
+
+		assertThat(gerClientes.getClientesDoBanco().size(), is(0));
+	}
+
+	@Test
+	public void testPesquisaListaVazia() {
+
+		List<Cliente> clientesDoBanco = new ArrayList<>();
+
+		gerClientes = new GerenciadoraClientes(clientesDoBanco);
+
+		Cliente cliente = gerClientes.pesquisaCliente(1);
+
+		assertNull(cliente);
+	}
+
+	@Test
+	public void testRemoverTodosClientes() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		gerClientes.removeCliente(1);
+		gerClientes.removeCliente(2);
+
+		assertThat(gerClientes.getClientesDoBanco().size(), is(0));
+	}
+
+	@Test
+	public void testDadosCliente() {
+
+		gerClientes = criarGerenciadorPadrao();
+
+		Cliente cliente = gerClientes.pesquisaCliente(2);
+
+		assertThat(cliente.getEmail(), is("felipeaugusto@gmail.com"));
+		assertThat(cliente.getIdade(), is(34));
+		assertTrue(cliente.isAtivo());
+	}
+
 }
